@@ -13,7 +13,7 @@ from scipy.stats import t
 def main():
     mlranalysis()
 
-def barChartDataWithConfidenceInterval(x, confidence_level =0.95):
+def barChartDataWithConfidenceInterval(x, handle=None, legendLabel = "Data 1", confidence_level =0.95):
     
     mean = x.mean()
     std = x.std()
@@ -23,11 +23,19 @@ def barChartDataWithConfidenceInterval(x, confidence_level =0.95):
     # Calculate the margin of error
     margin_of_error = t_critical * (std / np.sqrt(n))
     
-    plt.errorbar(x=0, y=mean, yerr=margin_of_error, fmt='o', capsize=5)
+    if handle:
+        handle.errorbar(x=1, y=mean,  yerr=margin_of_error, fmt='o', capsize=5, label=legendLabel)
+       # handle.set_title(f'{confidence_level*100}% Confidence Interval Error Bar')
+
+    else:
+        fig, ax = plt.subplots()
+        ax.errorbar(x=0, y=mean,  yerr=margin_of_error, fmt='o', capsize=5, label=legendLabel)
+        
     plt.title(f'{confidence_level*100}% Confidence Interval Error Bar')
     plt.xlabel('Measurement')
     plt.ylabel('Value')
-    plt.show()
+    plt.legend()
+    return ax
     
 
 def mlranalysis():
@@ -42,10 +50,13 @@ def mlranalysis():
     dfoneSNoStim = dfoneS.loc[(dfoneS['state'] == 0)]
     
     StimSpeed = dfoneSStim['speed']
+    NoStimeSpeed = dfoneSNoStim['speed']
     
-    barChartDataWithConfidenceInterval(StimSpeed)
+    h = barChartDataWithConfidenceInterval(StimSpeed,legendLabel="Stim")
+    h = barChartDataWithConfidenceInterval(NoStimeSpeed,h,legendLabel="NoStim")
+    plt.show()
+    print('hi')
     
-    # NoStimeSpeed = dfoneSNoStim['speed']
     
     # # Get all the speed data for statistical calculation
     
